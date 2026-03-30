@@ -21,26 +21,24 @@ const client = new Client({
 
 
 // ✅ REGISTER COMMANDS
-client.once(Events.ClientReady, async () => {
-  console.log(`Logged in as ${client.user.tag}`);
+const commands = [
+  new SlashCommandBuilder()
+    .setName('percentage')
+    .setDescription('Calculate a percentage'),
 
-  const commands = [
-    new SlashCommandBuilder()
-      .setName('percentage')
-      .setDescription('Calculate a percentage'),
+  new SlashCommandBuilder()
+    .setName('sell')
+    .setDescription('Create a sell entry')
+].map(command => command.toJSON());
 
-    new SlashCommandBuilder()
-      .setName('sell')
-      .setDescription('Create a sell entry')
-  ].map(cmd => cmd.toJSON());
+const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-  const rest = new REST({ version: '10' }).setToken(TOKEN);
-
+(async () => {
   try {
     console.log('Registering commands...');
     await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, "1487117451018764360"),
-      { body: commands }
+      Routes.applicationCommands(CLIENT_ID),
+      { body: commands },
     );
     console.log('Commands registered!');
   } catch (error) {
@@ -50,7 +48,9 @@ client.once(Events.ClientReady, async () => {
 
 
 // ✅ BOT READY
-
+client.once(Events.ClientReady, () => {
+  console.log(`Logged in as ${client.user.tag}`);
+});
 
 
 // ✅ HANDLE INTERACTIONS
