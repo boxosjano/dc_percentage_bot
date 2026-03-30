@@ -11,39 +11,40 @@ const {
   Routes
 } = require('discord.js');
 
+// 🔐 Use Railway environment variable
 const TOKEN = process.env.TOKEN;
-const CLIENT_ID = "1487373541488721920";
+const CLIENT_ID = "PASTE_YOUR_CLIENT_ID_HERE";
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
 
-// ✅ REGISTER SLASH COMMAND
+// ✅ REGISTER COMMANDS
 const commands = [
   new SlashCommandBuilder()
-    .setName('szazalek')
-    .setDescription('Százalék számítása')
+    .setName('percentage')
+    .setDescription('Calculate a percentage'),
 
   new SlashCommandBuilder()
-    .setName('eladas')
-    .setDescription('Eladás számontartása')
+    .setName('sell')
+    .setDescription('Create a sell entry')
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 (async () => {
   try {
-    console.log('Registering command...');
+    console.log('Registering commands...');
     await rest.put(
       Routes.applicationCommands(CLIENT_ID),
       { body: commands },
     );
-    console.log('Command registered!');
+    console.log('Commands registered!');
   } catch (error) {
     console.error(error);
   }
-})();
+});
 
 
 // ✅ BOT READY
@@ -55,22 +56,24 @@ client.once(Events.ClientReady, () => {
 // ✅ HANDLE INTERACTIONS
 client.on(Events.InteractionCreate, async interaction => {
 
-  // 🔹 Slash command → OPEN MODAL INSTANTLY
+  // 🔹 SLASH COMMANDS
   if (interaction.isChatInputCommand()) {
+
+    // ===== /percentage =====
     if (interaction.commandName === 'percentage') {
 
       const modal = new ModalBuilder()
         .setCustomId('percentage_modal')
-        .setTitle('Százalék');
+        .setTitle('Percentage Calculator');
 
       const numberInput = new TextInputBuilder()
         .setCustomId('number')
-        .setLabel('Szám')
+        .setLabel('Enter number')
         .setStyle(TextInputStyle.Short);
 
       const percentInput = new TextInputBuilder()
         .setCustomId('percent')
-        .setLabel('Százalék')
+        .setLabel('Enter percentage')
         .setStyle(TextInputStyle.Short);
 
       modal.addComponents(
@@ -80,30 +83,32 @@ client.on(Events.InteractionCreate, async interaction => {
 
       await interaction.showModal(modal);
     }
+
+    // ===== /sell =====
     if (interaction.commandName === 'sell') {
 
       const modal = new ModalBuilder()
         .setCustomId('sell_modal')
-        .setTitle('Eladás');
+        .setTitle('Sell Item');
 
       const nameInput = new TextInputBuilder()
         .setCustomId('name')
-        .setLabel('Neved:')
+        .setLabel('Your name')
         .setStyle(TextInputStyle.Short);
 
       const objectInput = new TextInputBuilder()
         .setCustomId('object')
-        .setLabel('Tárgy:')
+        .setLabel('Object')
         .setStyle(TextInputStyle.Short);
 
       const quantityInput = new TextInputBuilder()
         .setCustomId('quantity')
-        .setLabel('Mennyiség:')
+        .setLabel('Quantity')
         .setStyle(TextInputStyle.Short);
 
       const priceInput = new TextInputBuilder()
         .setCustomId('price')
-        .setLabel('Ár:')
+        .setLabel('Price')
         .setStyle(TextInputStyle.Short);
 
       modal.addComponents(
@@ -117,8 +122,10 @@ client.on(Events.InteractionCreate, async interaction => {
     }
   }
 
-  // 🔹 Modal submit → CALCULATE RESULT
+  // 🔹 MODAL SUBMIT
   if (interaction.isModalSubmit()) {
+
+    // ===== percentage result =====
     if (interaction.customId === 'percentage_modal') {
 
       const number = parseFloat(interaction.fields.getTextInputValue('number'));
@@ -126,7 +133,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
       if (isNaN(number) || isNaN(percent)) {
         return interaction.reply({
-          content: '❌ Számokat adj meg',
+          content: '❌ Please enter valid numbers!',
           ephemeral: true
         });
       }
@@ -136,17 +143,19 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.reply({
         embeds: [
           {
-            title: "📊 Százalék számoló",
+            title: "📊 Percentage Calculator",
             fields: [
-              { name: "Szám", value: `${number}`, inline: true },
-              { name: "Százalék", value: `${percent}%`, inline: true },
-              { name: "Eredmény", value: `${result}`, inline: false }
+              { name: "Number", value: `${number}`, inline: true },
+              { name: "Percentage", value: `${percent}%`, inline: true },
+              { name: "Result", value: `${result}`, inline: false }
             ]
           }
         ],
         ephemeral: true
       });
     }
+
+    // ===== sell result =====
     if (interaction.customId === 'sell_modal') {
 
       const name = interaction.fields.getTextInputValue('name');
@@ -154,21 +163,22 @@ client.on(Events.InteractionCreate, async interaction => {
       const quantity = interaction.fields.getTextInputValue('quantity');
       const price = interaction.fields.getTextInputValue('price');
 
+      // Private confirmation
       await interaction.reply({
-        content: "✅ Eladás!",
+        content: "✅ Sale posted!",
         ephemeral: true
       });
 
-      // Send to channel
+      // PUBLIC message (everyone sees this)
       await interaction.channel.send({
         embeds: [
           {
-            title: "🛒 Új Eladás",
+            title: "🛒 New Sale",
             fields: [
-              { name: "Név", value: name, inline: true },
-              { name: "Tárgy", value: object, inline: true },
-              { name: "Mennyiség", value: quantity, inline: true },
-              { name: "Ár", value: price, inline: true }
+              { name: "Name", value: name, inline: true },
+              { name: "Object", value: object, inline: true },
+              { name: "Quantity", value: quantity, inline: true },
+              { name: "Price", value: price, inline: true }
             ]
           }
         ]
