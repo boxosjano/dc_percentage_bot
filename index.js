@@ -22,8 +22,12 @@ const client = new Client({
 // ✅ REGISTER SLASH COMMAND
 const commands = [
   new SlashCommandBuilder()
-    .setName('percentage')
-    .setDescription('Calculate a percentage')
+    .setName('szazalek')
+    .setDescription('Százalék számítása')
+
+  new SlashCommandBuilder()
+    .setName('eladas')
+    .setDescription('Eladás számontartása')
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
@@ -76,6 +80,41 @@ client.on(Events.InteractionCreate, async interaction => {
 
       await interaction.showModal(modal);
     }
+    if (interaction.commandName === 'sell') {
+
+      const modal = new ModalBuilder()
+        .setCustomId('sell_modal')
+        .setTitle('Eladás');
+
+      const nameInput = new TextInputBuilder()
+        .setCustomId('name')
+        .setLabel('Neved:')
+        .setStyle(TextInputStyle.Short);
+
+      const objectInput = new TextInputBuilder()
+        .setCustomId('object')
+        .setLabel('Tárgy:')
+        .setStyle(TextInputStyle.Short);
+
+      const quantityInput = new TextInputBuilder()
+        .setCustomId('quantity')
+        .setLabel('Mennyiség:')
+        .setStyle(TextInputStyle.Short);
+
+      const priceInput = new TextInputBuilder()
+        .setCustomId('price')
+        .setLabel('Ár:')
+        .setStyle(TextInputStyle.Short);
+
+      modal.addComponents(
+        new ActionRowBuilder().addComponents(nameInput),
+        new ActionRowBuilder().addComponents(objectInput),
+        new ActionRowBuilder().addComponents(quantityInput),
+        new ActionRowBuilder().addComponents(priceInput)
+      );
+
+      await interaction.showModal(modal);
+    }
   }
 
   // 🔹 Modal submit → CALCULATE RESULT
@@ -106,6 +145,33 @@ client.on(Events.InteractionCreate, async interaction => {
           }
         ],
         ephemeral: true
+      });
+    }
+    if (interaction.customId === 'sell_modal') {
+
+      const name = interaction.fields.getTextInputValue('name');
+      const object = interaction.fields.getTextInputValue('object');
+      const quantity = interaction.fields.getTextInputValue('quantity');
+      const price = interaction.fields.getTextInputValue('price');
+
+      await interaction.reply({
+        content: "✅ Eladás!",
+        ephemeral: true
+      });
+
+      // Send to channel
+      await interaction.channel.send({
+        embeds: [
+          {
+            title: "🛒 Új Eladás",
+            fields: [
+              { name: "Név", value: name, inline: true },
+              { name: "Tárgy", value: object, inline: true },
+              { name: "Mennyiség", value: quantity, inline: true },
+              { name: "Ár", value: price, inline: true }
+            ]
+          }
+        ]
       });
     }
   }
