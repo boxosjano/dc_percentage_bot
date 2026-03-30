@@ -13,7 +13,7 @@ const {
 
 // 🔐 Use Railway environment variable
 const TOKEN = process.env.TOKEN;
-const CLIENT_ID = "PASTE_YOUR_CLIENT_ID_HERE";
+const CLIENT_ID = "1487373541488721920";
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
