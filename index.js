@@ -23,12 +23,12 @@ const client = new Client({
 // ✅ REGISTER COMMANDS
 const commands = [
   new SlashCommandBuilder()
-    .setName('percentage')
-    .setDescription('Calculate a percentage'),
+    .setName('szazalek')
+    .setDescription('Százalék számolása'),
 
   new SlashCommandBuilder()
-    .setName('sell')
-    .setDescription('Create a sell entry')
+    .setName('eladas')
+    .setDescription('Eladás feljegyzése')
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
@@ -64,16 +64,16 @@ client.on(Events.InteractionCreate, async interaction => {
 
       const modal = new ModalBuilder()
         .setCustomId('percentage_modal')
-        .setTitle('Percentage Calculator');
+        .setTitle('Százalék számoló');
 
       const numberInput = new TextInputBuilder()
         .setCustomId('number')
-        .setLabel('Enter number')
+        .setLabel('Szám')
         .setStyle(TextInputStyle.Short);
 
       const percentInput = new TextInputBuilder()
         .setCustomId('percent')
-        .setLabel('Enter percentage')
+        .setLabel('Százalék')
         .setStyle(TextInputStyle.Short);
 
       modal.addComponents(
@@ -89,26 +89,26 @@ client.on(Events.InteractionCreate, async interaction => {
 
       const modal = new ModalBuilder()
         .setCustomId('sell_modal')
-        .setTitle('Sell Item');
+        .setTitle('Eladás');
 
       const nameInput = new TextInputBuilder()
         .setCustomId('name')
-        .setLabel('Your name')
+        .setLabel('Név')
         .setStyle(TextInputStyle.Short);
 
       const objectInput = new TextInputBuilder()
         .setCustomId('object')
-        .setLabel('Object')
+        .setLabel('Tárgy')
         .setStyle(TextInputStyle.Short);
 
       const quantityInput = new TextInputBuilder()
         .setCustomId('quantity')
-        .setLabel('Quantity')
+        .setLabel('Mennyiség')
         .setStyle(TextInputStyle.Short);
 
       const priceInput = new TextInputBuilder()
         .setCustomId('price')
-        .setLabel('Price')
+        .setLabel('Ár')
         .setStyle(TextInputStyle.Short);
 
       modal.addComponents(
@@ -133,7 +133,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
       if (isNaN(number) || isNaN(percent)) {
         return interaction.reply({
-          content: '❌ Please enter valid numbers!',
+          content: '❌ Számokat adj meg!',
           ephemeral: true
         });
       }
@@ -143,11 +143,11 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.reply({
         embeds: [
           {
-            title: "📊 Percentage Calculator",
+            title: "📊 Százalék számoló",
             fields: [
-              { name: "Number", value: `${number}`, inline: true },
-              { name: "Percentage", value: `${percent}%`, inline: true },
-              { name: "Result", value: `${result}`, inline: false }
+              { name: "Szám", value: `${number}`, inline: true },
+              { name: "Százalék", value: `${percent}%`, inline: true },
+              { name: "Eredmény", value: `${result}`, inline: false }
             ]
           }
         ],
@@ -165,7 +165,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
       // Private confirmation
       await interaction.reply({
-        content: "✅ Sale posted!",
+        content: "✅ Sikeres feljegyzés!",
         ephemeral: true
       });
 
@@ -173,12 +173,12 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.channel.send({
         embeds: [
           {
-            title: "🛒 New Sale",
+            title: "🛒 Új Eladás",
             fields: [
-              { name: "Name", value: name, inline: true },
-              { name: "Object", value: object, inline: true },
-              { name: "Quantity", value: quantity, inline: true },
-              { name: "Price", value: price, inline: true }
+              { name: "Név", value: name, inline: true },
+              { name: "Tárgy", value: object, inline: true },
+              { name: "Mennyiség", value: quantity, inline: true },
+              { name: "Ár", value: price, inline: true }
             ]
           }
         ]
