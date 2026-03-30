@@ -39,7 +39,7 @@ client.once(Events.ClientReady, async () => {
   try {
     console.log('Registering commands...');
     await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, "YOUR_SERVER_ID"),
+      Routes.applicationGuildCommands(CLIENT_ID, "1487117451018764360"),
       { body: commands }
     );
     console.log('Commands registered!');
