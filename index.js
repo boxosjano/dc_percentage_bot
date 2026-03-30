@@ -50,9 +50,7 @@ client.once(Events.ClientReady, async () => {
 
 
 // ✅ BOT READY
-client.once(Events.ClientReady, () => {
-  console.log(`Logged in as ${client.user.tag}`);
-});
+
 
 
 // ✅ HANDLE INTERACTIONS
