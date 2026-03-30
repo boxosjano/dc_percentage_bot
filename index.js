@@ -21,24 +21,26 @@ const client = new Client({
 
 
 // ✅ REGISTER COMMANDS
-const commands = [
-  new SlashCommandBuilder()
-    .setName('szazalek')
-    .setDescription('Százalék számolása'),
+client.once(Events.ClientReady, async () => {
+  console.log(`Logged in as ${client.user.tag}`);
 
-  new SlashCommandBuilder()
-    .setName('eladas')
-    .setDescription('Eladás feljegyzése')
-].map(command => command.toJSON());
+  const commands = [
+    new SlashCommandBuilder()
+      .setName('percentage')
+      .setDescription('Calculate a percentage'),
 
-const rest = new REST({ version: '10' }).setToken(TOKEN);
+    new SlashCommandBuilder()
+      .setName('sell')
+      .setDescription('Create a sell entry')
+  ].map(cmd => cmd.toJSON());
 
-(async () => {
+  const rest = new REST({ version: '10' }).setToken(TOKEN);
+
   try {
     console.log('Registering commands...');
     await rest.put(
-      Routes.applicationCommands(CLIENT_ID),
-      { body: commands },
+      Routes.applicationGuildCommands(CLIENT_ID, "YOUR_SERVER_ID"),
+      { body: commands }
     );
     console.log('Commands registered!');
   } catch (error) {
